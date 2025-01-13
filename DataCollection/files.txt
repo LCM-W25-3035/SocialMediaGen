@@ -1,0 +1,3 @@
+# scripts info 
+
+1. Data_collection_newsAPI_mongoDB_V1 - Established a connection with MongoDB and stored the data fetched from NewsAPI.
