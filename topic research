@@ -1,0 +1,25 @@
+# Importing the Flask class from the flask library
+from flask import Flask
+
+# The argument "__name__" is used to determine the root path for the application.
+app = Flask(__name__)
+
+
+# Defining a route for the root URL ("/").
+# This route is linked to the `home` function.
+@app.route("/")
+def home():
+# When the root URL is accessed, this function returns a simple HTML response.
+    return "Hello! this is the main page <h1>HELLO<h1>"
+
+
+# Defining another route for the same URL ("/").
+# This route is linked to the `user` function and expects a name parameter.
+@app.route("/")
+def user(name):
+    return f"Hello{name}!"
+
+# The entry point for running the application.
+# If this script is run directly (not imported as a module), the Flask app starts running.
+if __name__ == "__main__":
+    app.run()
