@@ -5,7 +5,8 @@ scikit-learn==1.1.2
 matplotlib==3.5.2
 seaborn==0.11.2
 nltk==3.7
-
+pynytimes
+apache-airtflow==2.7.1
 # Install all dependencies in the file: pip install -r requirements.txt
 
 # Update the file if new libraries are added during development: pip freeze > requirements.txt
