@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>News Analytics and Social Media Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Header with Navbar -->
+    <header>
+        <div class="logo">
+            <h1>News Analytics</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#trending">Trending News</a></li>
+                <li><a href="#tech">Technology</a></li>
+                <li><a href="#business">Business</a></li>
+                <li><a href="#sports">Sports</a></li>
+                <li><a href="#entertainment">Entertainment</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Trending News Section -->
+        <section id="trending" class="section">
+            <h2>Trending News</h2>
+            <div class="news-container">
+                <!-- News Items List -->
+                <div class="news-item" onclick="generatePost('More calls for better GO Transit service after local family left waiting on the tracks')">
+                    <h3>More calls for better GO Transit service after local family left waiting on the tracks</h3>
+                    <p>21 hours ago by Justine Fraser</p>
+                </div>
+
+                <div class="news-item" onclick="generatePost('Detroit to manufacture next generation Dodge Durango')">
+                    <h3>Detroit to manufacture next generation Dodge Durango</h3>
+                    <p>22 hours ago by Kate Otterbein</p>
+                </div>
+
+                <div class="news-item" onclick="generatePost('I compared value grocers in U.S. and Canada. One discount chain won - even with a weak loonie')">
+                    <h3>I compared value grocers in U.S. and Canada. One discount chain won - even with a weak loonie</h3>
+                    <p>2 hours ago by Mariya Postelnyak l M.A.</p>
+                </div>
+
+                <div class="news-item" onclick="generatePost('Canada Post shakes up leadership eliminating three executives in wake of strike')">
+                    <h3>Canada Post shakes up leadership eliminating three executives in wake of strike</h3>
+                    <p>2 hours ago by Hayden Godfrey & Josh Rubin</p>
+                </div>
+
+                <div class="news-item" onclick="generatePost('Confused by Toronto’s underground PATH system? There’s a new app that can help you navigate it.')">
+                    <h3>Confused by Toronto’s underground PATH system? There’s a new app that can help you navigate it.</h3>
+                    <p>Yesterday by Codi Wilson</p>
+                </div>
+
+                <div class="news-item" onclick="generatePost('Ontario government to tunnel Brampton portion of Hazel McCallion LRT')">
+                    <h3>Ontario government to tunnel Brampton portion of Hazel McCallion LRT</h3>
+                    <p>2 hours ago by Patricia D'cunha</p>
+                </div>
+            </div>
+        </section>
+
+        <!--  Categories 
+        <section id="categories" class="section">
+            <div id="tech" class="news-category">
+                <h3>Technology</h3>
+                <div class="news-item" onclick="generatePost('AI is Changing the Way We Work: Artificial Intelligence is transforming industries and increasing productivity...')">
+                    <h4>AI is Changing the Way We Work</h4>
+                    <p>AI is transforming industries and increasing productivity...</p>
+                </div>
+            </div>
+            <div id="business" class="news-category">
+                <h3>Business</h3>
+                <div class="news-item" onclick="generatePost('Stock Market Soars to New Heights: The stock market is seeing unprecedented growth this year...')">
+                    <h4>Stock Market Soars to New Heights</h4>
+                    <p>The stock market is seeing unprecedented growth this year...</p>
+                </div>
+            </div>
+            <div id="sports" class="news-category">
+                <h3>Sports</h3>
+                <div class="news-item" onclick="generatePost('New World Record Set in Sprinting: A new world record was set in sprinting at the Olympic Games...')">
+                    <h4>New World Record Set in Sprinting</h4>
+                    <p>A new world record was set in sprinting at the Olympic Games...</p>
+                </div>
+            </div>
+            <div id="entertainment" class="news-category">
+                <h3>Entertainment</h3>
+                <div class="news-item" onclick="generatePost('Major Movie Release Breaks Records: A new blockbuster movie is breaking box office records worldwide...')">
+                    <h4>Major Movie Release Breaks Records</h4>
+                    <p>A new blockbuster movie is breaking box office records worldwide...</p>
+                </div>
+            </div>
+        </section> -->
+
+        <!-- Social Media Post Generator -->
+        <section id="social" class="section">
+            <h2>Generate Social Media Post</h2>
+            <textarea id="newsInput" placeholder="The news summary will appear here..."></textarea>
+            <button id="generatePostBtn">Generate Post</button>
+            <div id="generatedPost" class="generated-post"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 News Analytics. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+</body  >
+
+</html>
