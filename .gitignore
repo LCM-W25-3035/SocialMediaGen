@@ -162,3 +162,28 @@ cython_debug/
 #.idea/
 
 Data/*
+
+# Python-related
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.env
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# Django-related
+db.sqlite3
+*.log
+/staticfiles/
+media/
+
+# VSCode and IDE files
+.vscode/
+.idea/
+
+# Other
+*.DS_Store
