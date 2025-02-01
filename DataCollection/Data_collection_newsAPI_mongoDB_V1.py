@@ -14,62 +14,83 @@ import time
 Client = MongoClient('mongodb+srv://Govind:*******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics')
 
 # creating a database and collection in mongoDB
-db = Client['NewsApi']             # Creating a database in mongoDB 'NewsApi'
+db = Client['News_Api']             # Creating a database in mongoDB 'NewsApi'
 collection = db['News_data']       # Creating a collection 'News_data' in database 'NewsApi'
 
 # API keys
-api_keys = ['*************************','*************************','*************************']
+api_keys = ['*************************','*************************','*************************','*****************************','******************************','***********************']
 
-# defining a new variable to hold the current key index
-current_key_index = 0 
+# Categories and Sources
+categories = ['technology', 'sports', 'entertainment', 'politics', 'business']
+category_sources = {
+    'technology': ['techcrunch', 'the-verge', 'wired', 'ars-technica', 'engadget', 'gruenderszene'],
+    'sports': ['espn', 'bbc-sport', 'fox-sports', 'four-four-two', 'bleacher-report', 'nfl-news'],
+    'entertainment': ['buzzfeed', 'mtv-news', 'entertainment-weekly', 'polygon', 'ign', 'the-lad-bible'],
+    'politics': ['cnn', 'bbc-news', 'reuters', 'politico', 'the-hill', 'the-washington-times'],
+    'business': ['business-insider', 'the-wall-street-journal', 'bloomberg', 'fortune', 'financial-post', 'les-echos']
+}
 
-# Function to fetch news and store in MongoDB
+
 def fetch_news():
-    s_time = time.time() #time function starts at
-    
-    global current_key_index #Use golbal variable
-
-    # Selecting the current API key
-    current_api_key = api_keys[current_key_index]
-    print(f"Using API key: {current_api_key}")
-
-    # Initialize NewsApiClient with the current key
-    news_api = NewsApiClient(api_key=current_api_key)
-
-    # Changing to next key for next turn
-    current_key_index = (current_key_index + 1) % len(api_keys)
-
-    # Specifying from and to dates for news fetching
+    s_time = time.time()
     today = datetime.now()
     last_week = today - timedelta(days=7)
     from_date = last_week.strftime('%Y-%m-%d')
     to_date = today.strftime('%Y-%m-%d')
 
-    for req in range(1, 101):  # As free limit is 100 requests per key per day
-        try:
-            # Fetching data from the API
-            response = news_api.get_everything(q='news', from_param=from_date, to=to_date, page=req, page_size=100)
+    total_keys = len(api_keys)
+    key_index = 0
+    source_indices = {category: 0 for category in categories}  # Track source index per category
+    
+    while True:  # This will run the process in a loop every 5 minutes
+        for category in categories:
+            sources = category_sources[category]
+            num_sources = len(sources)
 
-            if 'articles' in response and response['articles']:  # Check if articles exist
-                for article in response['articles']:
-                    # Checking if the article already exists in the collection based on the url
-                    if collection.find_one({'url': article['url']}):
-                        print(f"Article already exists (duplicate): {article['title']}")
+            for _ in range(num_sources):
+                source_index = source_indices[category] % num_sources  # Rotate sources per category
+                source = sources[source_index]
+                source_indices[category] += 1  # Move to next source in next iteration
+                
+                api_key = api_keys[key_index % total_keys]
+                print(f"Using API key {key_index + 1}: {api_key}, Source: {source}")
+                news_api = NewsApiClient(api_key=api_key)
+
+                articles_fetched = False
+
+                print(f"Fetching articles from source {source} for category {category}")
+                try:
+                    response = news_api.get_everything(
+                        sources=source,         # Specify sources directly
+                        from_param=from_date,    # Date range for fetching news
+                        to=to_date,             # Date range for fetching news
+                        page=1,                 # Start from page 1
+                        page_size=16,           # Fetch 16 articles per page
+                        language='en'           # Specifying language as english
+                    )
+                    if 'articles' in response and response['articles']:
+                        for article in response['articles']:
+                            # Add category field to article
+                            article['category'] = category
+
+                            # Check for duplicate URL in the database
+                            if not collection.find_one({'url': article['url']}):
+                                collection.insert_one(article)
+                                print(f"Inserted: {article['title']}")
+                            else:
+                                print(f"Duplicate: {article['title']}")
+                        articles_fetched = True
                     else:
-                        # Insert the article if it doesn't exist
-                        collection.insert_one(article)
-                        print(f"Article inserted: {article['title']}")
-            else:
-                print(f'Page {req}: No articles returned.')
-                break
+                        print(f"No articles found for source: {source}")
+                except Exception as e:
+                    print(f"Error fetching articles from source {source} for category {category}: {e}")
 
-        except Exception as e:
-            print(f'Page {req}: Error occurred - {e}')
-            break
-                      
-    e_time = time.time()               # time function ends at
-    total_time_taken = s_time - e_time # to calculate time taken in fetching data 
-    print('Fetch complete!, time taken:',total_time_taken')
+                if not articles_fetched:
+                    print(f"No articles found for category {category} from source {source}, switching to next source.")
+                key_index = (key_index + 1) % total_keys  # Rotate API keys
+
+        e_time = time.time()
+        print(f'Fetch complete! Time taken: {e_time - s_time:.2f} seconds')
 
 
 # APScheduler setup
