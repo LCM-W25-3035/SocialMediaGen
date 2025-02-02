@@ -2,12 +2,16 @@ from kafka import KafkaProducer
 from pynytimes import NYTAPI
 from datetime import datetime, timedelta
 import json
+import os
+from dotenv import find_dotenv, load_dotenv
+
+load_dotenv(find_dotenv())
 
 # Kafka Producer
 producer = KafkaProducer(bootstrap_servers='localhost:9092', value_serializer=lambda v: json.dumps(v).encode('utf-8'))
 
 # NYT API Key
-NYT_API_KEY = "15MPlclMxKGuTa7WreSZ9IYcbjoo45sL"
+NYT_API_KEY = os.getenv("NYT_API_KEY")
 
 def extract_news():
     nyt = NYTAPI(NYT_API_KEY, parse_dates=True)

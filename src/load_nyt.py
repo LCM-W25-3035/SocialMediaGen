@@ -4,7 +4,7 @@ from elasticsearch import Elasticsearch
 import json
 from transform_nyt import transform_data
 
-DB_URI = "mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
+DB_URI = "mongodb+srv://Govind:*******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
 DB_NAME = "nyt_database"
 COLLECTION_NAME = "articles"
 
