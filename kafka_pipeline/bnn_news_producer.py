@@ -5,7 +5,7 @@ import json
 from urllib.parse import urljoin
 
 # Kafka Config
-KAFKA_TOPIC = "news_topic"
+KAFKA_TOPIC = "bnn_news_topic"
 KAFKA_SERVER = "localhost:9092"
 
 # Initialize Kafka Producer
