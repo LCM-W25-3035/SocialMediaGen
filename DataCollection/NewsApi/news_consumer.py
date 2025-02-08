@@ -1,30 +1,38 @@
 from kafka import KafkaConsumer
-import json
 from pymongo import MongoClient
+import json
 
-# Kafka & MongoDB Configuration
+# Kafka and MongoDB configurations
+KAFKA_TOPIC = 'news_data'
 KAFKA_BROKER = 'localhost:9092'
-KAFKA_TOPIC = 'news_data' # topic we created in kafka
 MONGO_URL = "mongodb+srv://Govind:*******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
 
-# MongoDB Connection
-client = MongoClient(MONGO_URL)
-db = client['News_Api']
-collection = db['News_data']
+# Connect to MongoDB
+try:
+    client = MongoClient(MONGO_URL)
+    db = client['News_Api']
+    collection = db['News_data']
+    print("Connected to MongoDB successfully!")
+except Exception as e:
+    print("Failed to connect to MongoDB:", e)
+    exit()
 
-# Kafka Consumer
-consumer = KafkaConsumer(KAFKA_TOPIC, bootstrap_servers=KAFKA_BROKER, value_deserializer=lambda m: json.loads(m.decode('utf-8')),consumer_timeout_ms=10000) # Stop after 10s if no messages
+# Connect to Kafka
+consumer = KafkaConsumer(
+    KAFKA_TOPIC,
+    bootstrap_servers=KAFKA_BROKER,
+    value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+)
 
-print("Consumer started. Listening for messages...")
+print("Listening for messages...")
 
 for message in consumer:
     news_article = message.value
-    
-    # Check if article already exists(deduplication)
+    print("Received from Kafka:", news_article)  # Print the data before inserting
+
+    # Ensure the article has a unique URL before inserting
     if not collection.find_one({'url': news_article.get('url')}):
         collection.insert_one(news_article)
-        print(f"Stored: {news_article['title']}")
+        print(f"Stored in MongoDB: {news_article['title']}")
     else:
-        print(f"Duplicate: {news_article['title']}")
-
-print("Consumer finished processing messages.")
+        print(f"Duplicate skipped: {news_article['title']}")
