@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # Kafka and MongoDB Configurations
 KAFKA_BROKER = "localhost:9092"
 KAFKA_TOPIC = "news_data"
-MONGO_URI = "mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
+MONGO_URI = "mongodb+srv://Govind:*******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
 
 # API Keys and Assigned Sources
 api_keys = ['6fa922774e3548a3825bdb717a570d81', '8420df35e605441d92e5c763b0110bfa', 
