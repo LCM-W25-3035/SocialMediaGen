@@ -4,7 +4,7 @@ from datetime import datetime
 import threading
 
 # Connectong to MongoDB
-client = MongoClient("mongodb+srv://Govind:******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics")
+client = MongoClient("mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics")
 db = client['news_database']
 
 # Defining source collections and master collection

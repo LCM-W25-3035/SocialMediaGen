@@ -26,7 +26,7 @@ dag = DAG(
     'nyt_news_scraper',
     default_args=default_args,
     description='Scrapes NYT News and stores it in MongoDB',
-    schedule_interval="0 */4 * * *",  # Runs every 4 hours
+    schedule_interval="0 */1 * * *",  # Runs every 4 hours
     catchup=False
 )
 

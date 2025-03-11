@@ -19,7 +19,7 @@ dag = DAG(
     'bnn_bloomberg_scraper',
     default_args=default_args,
     description='Scrapes BNN Bloomberg News and stores it in MongoDB',
-    schedule_interval="0 */4 * * *",  # Runs every 4 hours
+    schedule_interval="0 */1 * * *",  
     catchup=False
 )
 

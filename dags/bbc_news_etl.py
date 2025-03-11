@@ -96,7 +96,7 @@ dag = DAG(
     'bbc_news_etl',
     default_args=default_args,
     description='ETL pipeline for BBC News scraping',
-    schedule_interval="0 */4 * * *",  # Runs every 4 hours
+    schedule_interval="0 */1 * * *",  
     catchup=False,
 )
 

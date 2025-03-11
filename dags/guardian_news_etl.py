@@ -81,7 +81,7 @@ dag = DAG(
     'guardian_news_etl',
     default_args=default_args,
     description='ETL pipeline for The Guardian news scraping',
-    schedule_interval="0 */4 * * *",  # Runs every 4 hours
+    schedule_interval="0 */1 * * *",  # Runs every 4 hours
     catchup=False,
 )
 
