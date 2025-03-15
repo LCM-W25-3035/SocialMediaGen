@@ -1,3 +1,12 @@
+""" GPT PROMPTS
+first prompt: I want to create a app which will take news data like summary and headline from mongo and use hugging face and llama to convert that news into social media post
+last prompt:Getting error:
+            Response Status Code: 415
+
+            Response Text: Expected request with Content-Type: application/json
+
+            Generated Social Media Post:
+            Error: 415 - Expected request with Content-Type: application/json"""
 
 import streamlit as st
 from pymongo import MongoClient
