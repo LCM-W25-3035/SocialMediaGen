@@ -39,7 +39,7 @@ def fetch_all_news():
 
 def generate_social_media_post(headline, summary):
     """Generate a social media post using Mistral model via Hugging Face Inference API"""
-    prompt = f"Make a social media post from the provided data:\nHeadline: {headline}\nSummary: {summary}\n\nPost:"
+    prompt = f"Determine the sentiment (positive, negative, neutral) of this news.Generate a short social media post based on the sentiment:Positive**: Exciting, highlight good news. Negative**: Serious, sensitive, informative.Neutral**: Factual, engaging.Include a catchy hook, key insight, and relevant hashtags:\nHeadline: {headline}\nSummary: {summary}\n\nPost:"
     
     result = generator(prompt, max_length=100, num_return_sequences=1)
     return result[0]["generated_text"]
