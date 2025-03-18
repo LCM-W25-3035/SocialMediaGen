@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Analytics</title>
+    <style>
+        .news-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .news-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .news-summary {
+            font-size: 1em;
+            color: #555;
+        }
+        .news-timestamp {
+            font-size: 0.9em;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>News Analytics</h1>
+    <a href="{% url 'add_news' %}">Add News</a>
+    <div class="news-list">
+        {% for news in news_list %}
+            <div class="news-item">
+                <h3 class="news-title">{{ news.headline }}</h3>
+                <p class="news-summary">{{ news.summary }}</p>
+                <p class="news-timestamp">{{ news.timestamp }}</p>
+                <a href="{% url 'edit_news' news._id %}">Edit</a>
+                <form action="{% url 'delete_news' news._id %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
