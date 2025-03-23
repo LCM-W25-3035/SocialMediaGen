@@ -4,7 +4,7 @@ from elasticsearch.helpers import BulkIndexError
 
 # --- MongoDB Connection Settings ---
 mongo_uri = "mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
-mongo_db_name = "news_databse"             # Replace with your MongoDB database name
+mongo_db_name = "news_database"             # Replace with your MongoDB database name
 mongo_collection_name = "master_news"       # Replace with your collection name
 
 # Connect to MongoDB

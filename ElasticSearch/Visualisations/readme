@@ -1,0 +1,13 @@
+"""Contents
+kibana_exports/
+Contains the exported Kibana objects (.ndjson files). These files allow you to import dashboards, visualizations, and saved searches into other Kibana environments.
+
+screenshots/
+Folder with reference images showing how each visualization or dashboard looks. These can help collaborators quickly see what to expect or verify they have loaded properly.
+
+How to Import in Kibana
+Open Kibana and go to Stack Management → Saved Objects.
+Click Import, then select the .ndjson file you want to import (e.g., exported_visualizations.ndjson).
+(Optional) Kibana may ask if you want to Automatically overwrite objects if they already exist. Choose the setting that best suits your environment.
+After importing, you should see the dashboards and visualizations under Analytics → Dashboard or Analytics → Visualize Library.
+"""
