@@ -1,0 +1,6 @@
+<h1>{{ form.instance.pk|default:"Create" }} Task</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save</button>
+</form>
