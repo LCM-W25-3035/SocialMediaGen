@@ -8,7 +8,7 @@ from urllib.parse import unquote
 import json
 
 # MongoDB Connection (included in code)
-MONGO_URI = "mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
+MONGO_URI = "mongodb+srv://Govind:*****@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
 client = MongoClient(MONGO_URI)
 db = client['news_database']
 collection = db['master_news_01']
