@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from pymongo import MongoClient
 
 # MongoDB setup
-client = MongoClient("mongodb+srv://devansh:Devansh%409526@cluster2.q4obi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster2")
+client = MongoClient("mongodb+srv://devansh:*******@cluster2.q4obi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster2")
 db = client["news_db"]
 collection = db["guardian_news"]
 

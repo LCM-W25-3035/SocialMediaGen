@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import threading
 
 # MongoDB connection
-client = MongoClient("mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics")
+client = MongoClient("mongodb+srv://Govind:*******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics")
 db = client['news_database']
 source_collections = ['Newsapi_data', 'bbc_news', 'bnn_news', 'cnn_news', 'ctv_news', 'guardian_news', 'nyt_news', 'nytimes_news', 'yahoo_news']
 master_collection = db['master_news']
