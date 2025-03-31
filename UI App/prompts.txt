@@ -1,0 +1,19 @@
+Prompts:
+
+1. 22 march 2025:
+* Start: I am creating a django app to create a social media post using news headline and summary.
+
+* last prompt: 
+try {
+      const newsId = "{{ news_item.id}}";  // Use the correct variable for the news item ID (can be removed if using headline) 
+      if (!newsId) {
+          throw new Error('News ID not found.');
+      }
+
+correct this part for me as it is still taking news_id not headline
+
+
+2. 30 March 2025:
+* Start: at the output section I want only post generated data, not the prompt given by user and news details
+
+* last prompt: for output also check for 'Additional user instructions:' if present, show news after that
