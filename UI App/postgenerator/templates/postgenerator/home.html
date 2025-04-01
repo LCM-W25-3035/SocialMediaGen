@@ -1,3 +1,9 @@
+
+<!-- ChatGpt (GPT-4o): "Redesign my existing news analytics webpage. Replace the navbar with a sidebar that opens when clicking a hamburger menu. 
+ The sidebar should contain category links that fetch news dynamically. Ensure clicking a category updates the section title and closes the sidebar. 
+ Improve the fetchNews() function to handle this smoothly. Keep the page responsive and enhance UI with CSS. Also, fix any minor bugs in the JavaScript code." -->
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -38,23 +44,52 @@
             font-size: 24px;
         }
 
-        header nav ul {
+        /* Hamburger Menu */
+        .hamburger {
+            font-size: 24px;
+            cursor: pointer;
+            display: block;
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #333;
+            color: #fff;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+
+        .sidebar ul {
             list-style: none;
-            display: flex;
+            padding: 0;
         }
 
-        header nav ul li {
-            margin: 0 15px;
+        .sidebar ul li {
+            padding: 15px;
+            text-align: center;
         }
 
-        header nav ul li a {
+        .sidebar ul li a {
             color: #fff;
             text-decoration: none;
             font-size: 18px;
         }
 
-        header nav ul li a:hover {
+        .sidebar ul li a:hover {
             color: #ff6f61;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
         }
 
         /* Main Content */
@@ -67,127 +102,8 @@
             margin-bottom: 40px;
         }
 
-        h2,
-        h3,
-        h4 {
+        h2, h3, h4 {
             color: #333;
-        }
-
-        /* Trending and News Categories */
-        .news-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .news-item {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            width: 45%;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-        }
-
-        .news-item:hover {
-            background-color: #f0f0f0;
-            transform: translateY(-5px);
-        }
-
-        .news-item h3 {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .news-item p {
-            font-size: 16px;
-            color: #555;
-        }
-
-        .news-item a {
-            color: #ff6f61;
-            text-decoration: none;
-        }
-
-        /* Load More Button */
-        #load-more-btn {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
-            background-color: #ff6f61;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        #load-more-btn:hover {
-            background-color: #e55b4b;
-        }
-
-        /* Social Media Post Generator */
-        #social {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            margin-bottom: 20px;
-            height: 150px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #ff6f61;
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background-color: #e55b4b;
-        }
-
-        .generated-post {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-
-        /* Footer */
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* Dropdown Styling */
-        .topic-dropdown {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        select {
-            padding: 10px;
-            font-size: 16px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            width: 200px;
         }
     </style>
 </head>
@@ -196,78 +112,65 @@
     <!-- Header with Navbar -->
     <header>
         <div class="logo">
-            <h1>News Analytics</h1>
+            <h1>News Analytics And Social Media Assistant</h1>
         </div>
-        <nav>
-            <ul>
-                <!-- You can add more links here if needed -->
-            </ul>
-        </nav>
+        <div class="hamburger" onclick="openSidebar()">☰</div>
     </header>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <div class="close-btn" onclick="closeSidebar()">×</div>
+        <ul>
+            <li><a href="#" onclick="fetchNews(1, '')">All Topics</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Education')">Education</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Entertainment')">Entertainment</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Environment')">Environment</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Finance')">Finance</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Food')">Food</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Health')">Health</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Politics')">Politics</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Sports')">Sports</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Technology')">Technology</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Travel')">Travel</a></li>
+        </ul>
+    </div>
 
     <!-- Main Content -->
     <main>
-        <!-- Dropdown for Topic Filter -->
-        <div class="topic-dropdown">
-            <label for="topic-filter">Filter by Topic:</label>
-            <select id="topic-filter" class="form-control">
-                <option value="">All Topics</option>
-                <option value="Education">Education</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Environment">Environment</option>
-                <option value="Finance">Finance</option>
-                <option value="Food">Food</option>
-                <option value="Health">Health</option>
-                <option value="Politics">Politics</option>
-                <option value="Sports">Sports</option>
-                <option value="Technology">Technology</option>
-                <option value="Travel">Travel</option>
-            </select>
-        </div>
-
         <!-- Trending News Section -->
         <section id="trending" class="section">
-            <h2>Trending News</h2>
-            <div class="news-container" id="news-container">
-                <!-- News items will be dynamically inserted here -->
-            </div>
-            <!-- Load More Button -->
+            <h2 id="section-title">Trending News</h2>
+            <div class="news-container" id="news-container"></div>
             <button id="load-more-btn" style="display: none;">Load More</button>
-        </section>
-
-        <!-- Social Media Post Generator -->
-        <section id="social" class="section">
-            <h2>Generate Social Media Post</h2>
-            <textarea id="newsInput" placeholder="The news summary will appear here..."></textarea>
-            <button id="generatePostBtn">Generate Post</button>
-            <div id="generatedPost" class="generated-post"></div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2025 News Analytics. All rights reserved.</p>
-    </footer>
-
     <script>
-        let currentPage = 1; // Track the current page
-        const topicFilter = document.getElementById('topic-filter');
+        let currentPage = 1;
 
-        // Fetch news from Django backend
+        function openSidebar() {
+            document.getElementById("sidebar").style.left = "0";
+        }
+
+        function closeSidebar() {
+            document.getElementById("sidebar").style.left = "-250px";
+        }
+
         async function fetchNews(page, topic = '') {
             try {
-                const response = await fetch(`/fetch-news/?page=${page}&topic=${topic}`);  // Pass the page and topic
-                const newsData = await response.json();
+                // Set the section title dynamically
+                const sectionTitle = topic === '' ? 'Trending News' : topic;
+                document.getElementById('section-title').textContent = sectionTitle;
 
+                const response = await fetch(`/fetch-news/?page=${page}&topic=${topic}`);
+                const newsData = await response.json();
                 const newsContainer = document.getElementById('news-container');
                 const loadMoreButton = document.getElementById('load-more-btn');
 
-                // Clear existing content if it's the first page
                 if (page === 1) {
                     newsContainer.innerHTML = '';
                 }
 
-                // Loop through news data and create news items
                 newsData.forEach(news => {
                     const newsItem = document.createElement('div');
                     newsItem.className = 'news-item';
@@ -281,31 +184,22 @@
                     newsContainer.appendChild(newsItem);
                 });
 
-                // Show the "Load More" button if there are more items
-                if (newsData.length > 0) {
-                    loadMoreButton.style.display = 'block';
-                } else {
-                    loadMoreButton.style.display = 'none';
-                }
+                loadMoreButton.style.display = newsData.length > 0 ? 'block' : 'none';
+
+                // Close the sidebar when a topic is selected
+                closeSidebar();
+
             } catch (error) {
                 console.error('Error fetching news:', error);
             }
         }
 
-        // Load more news when the "Load More" button is clicked
         document.getElementById('load-more-btn').addEventListener('click', () => {
-            currentPage += 1; // Increment the page number
-            fetchNews(currentPage, topicFilter.value); // Fetch the next page of news with the selected topic
+            currentPage += 1;
+            fetchNews(currentPage);
         });
 
-        // Fetch the first page of news when the page loads
         document.addEventListener('DOMContentLoaded', () => fetchNews(currentPage));
-
-        // Fetch news whenever the topic filter changes
-        topicFilter.addEventListener('change', () => {
-            currentPage = 1; // Reset to the first page
-            fetchNews(currentPage, topicFilter.value); // Fetch news with the selected topic
-        });
     </script>
 </body>
 
