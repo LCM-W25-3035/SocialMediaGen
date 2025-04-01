@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SocialPulse - News to Social Media</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.8;
+        }
+
+        /* Header */
+        header {
+            background: #2c3e50;
+            color: #fff;
+            padding: 1rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        header .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-grow: 1;
+            margin: 0 2rem;
+        }
+
+        header .search-bar input {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        header .search-bar select {
+            padding: 0.6rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: #34495e;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        header nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        header nav ul li {
+            margin-left: 2rem;
+        }
+
+        header nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        header nav ul li a:hover {
+            color: #3498db;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: url('https://source.unsplash.com/1600x900/?news') no-repeat center/cover;
+            color: #fff;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .cta-btn {
+            padding: 0.8rem 2rem;
+            background: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background: #2980b9;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+
+        /* News Section */
+        .news-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .news-item {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .news-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .news-item h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            color: #34495e;
+        }
+
+        .news-item p {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        /* Social Media Generator */
+        #social {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        button {
+            background: #3498db;
+            padding: 0.8rem 2rem;
+            border: none;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #2980b9;
+        }
+
+        .generated-post {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: #ecf0f1;
+            border-radius: 8px;
+        }
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .feature-item {
+            padding: 1.5rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: #fff;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <h1>SocialPulse</h1>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search news...">
+            <select id="category-filter">
+                <option value="">All Categories</option>
+                <option value="Politics & International Affairs">Politics & International Affairs</option>
+                <option value="Entertainment & Sports">Entertainment & Sports</option>
+                <option value="Global Crises & Disasters">Global Crises & Disasters</option>
+                <option value="Technology & Business">Technology & Business</option>
+                <option value="Consumer Trends & Lifestyle">Consumer Trends & Lifestyle</option>
+            </select>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#trending">News</a></li>
+                <li><a href="#social">Generate</a></li>
+                <li><a href="#features">Features</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h2>Turn News into Viral Social Media Posts</h2>
+            <p>SocialPulse transforms the latest news into engaging, platform-ready social media content with just a click. Stay ahead of trends and captivate your audience effortlessly.</p>
+            <button class="cta-btn" onclick="document.getElementById('social').scrollIntoView()">Try It Now</button>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Features Section -->
+        <section id="features" class="section">
+            <h2>Why SocialPulse?</h2>
+            <div class="features">
+                <div class="feature-item">
+                    <h3>Real-Time News</h3>
+                    <p>Access the latest news from trusted sources, updated in real-time.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Smart Summaries</h3>
+                    <p>AI-powered summaries tailored for concise, impactful posts.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Multi-Platform Ready</h3>
+                    <p>Generate posts optimized for Twitter, Instagram, LinkedIn, and more.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trending News Section -->
+        <section id="trending" class="section">
+            <h2>Trending News</h2>
+            <div class="news-container" id="news-container">
+                <!-- News items dynamically inserted -->
+            </div>
+            <button id="load-more-btn" style="display: none; margin: 2rem auto;">Load More</button>
+        </section>
+
+        <!-- Social Media Post Generator -->
+        <section id="social" class="section">
+            <h2>Create Your Post</h2>
+            <textarea id="newsInput" placeholder="Paste news summary here or select from trending news..."></textarea>
+            <button id="generatePostBtn">Generate Post</button>
+            <div id="generatedPost" class="generated-post"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 SocialPulse by Group5. Transforming news into social media magic.</p>
+    </footer>
+
+    <script>
+        let currentPage = 1;
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('category-filter');
+
+        async function fetchNews(page, query = '', category = '') {
+            try {
+                const response = await fetch(`/fetch-news/?page=${page}&query=${encodeURIComponent(query)}&category=${encodeURIComponent(category)}`);
+                const newsData = await response.json();
+                const newsContainer = document.getElementById('news-container');
+                const loadMoreButton = document.getElementById('load-more-btn');
+
+                if (page === 1) newsContainer.innerHTML = '';
+
+                newsData.forEach(news => {
+                    const newsItem = document.createElement('div');
+                    newsItem.className = 'news-item';
+                    newsItem.innerHTML = `
+                        <h3>${news.headline}</h3>
+                        <p>${news.summary}</p>
+                        <p><strong>Source:</strong> ${news.source}</p>
+                    `;
+                    newsItem.onclick = () => document.getElementById('newsInput').value = news.summary;
+                    newsContainer.appendChild(newsItem);
+                });
+
+                loadMoreButton.style.display = newsData.length > 0 ? 'block' : 'none';
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        }
+
+        // Load more news
+        document.getElementById('load-more-btn').addEventListener('click', () => {
+            currentPage++;
+            fetchNews(currentPage, searchInput.value, categoryFilter.value);
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => fetchNews(currentPage));
+
+        // Search functionality
+        searchInput.addEventListener('input', debounce(() => {
+            currentPage = 1;
+            fetchNews(currentPage, searchInput.value, categoryFilter.value);
+        }, 300));
+
+        // Category filter
+        categoryFilter.addEventListener('change', () => {
+            currentPage = 1;
+            fetchNews(currentPage, searchInput.value, categoryFilter.value);
+        });
+
+        // Generate post
+        document.getElementById('generatePostBtn').addEventListener('click', () => {
+            const input = document.getElementById('newsInput').value;
+            const post = `📰 ${input.slice(0, 100)}... Read more: [link] #News #SocialPulse`;
+            document.getElementById('generatedPost').innerHTML = `<p>${post}</p>`;
+        });
+
+        // Debounce function to limit search requests
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+</body>
+</html>
