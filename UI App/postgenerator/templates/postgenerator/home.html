@@ -1,9 +1,4 @@
 
-<!-- ChatGpt (GPT-4o): "Redesign my existing news analytics webpage. Replace the navbar with a sidebar that opens when clicking a hamburger menu. 
- The sidebar should contain category links that fetch news dynamically. Ensure clicking a category updates the section title and closes the sidebar. 
- Improve the fetchNews() function to handle this smoothly. Keep the page responsive and enhance UI with CSS. Also, fix any minor bugs in the JavaScript code." -->
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -44,11 +39,33 @@
             font-size: 24px;
         }
 
-        /* Hamburger Menu */
-        .hamburger {
-            font-size: 24px;
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .search-container input {
+            border: none;
+            padding: 8px;
+            width: 250px;
+            outline: none;
+        }
+
+        .search-container button {
+            background: #ff6f61;
+            color: white;
+            border: none;
+            padding: 8px 12px;
             cursor: pointer;
-            display: block;
+            border-radius: 5px;
+        }
+
+        .search-container button:hover {
+            background: #e85c50;
         }
 
         /* Sidebar Menu */
@@ -109,10 +126,14 @@
 </head>
 
 <body>
-    <!-- Header with Navbar -->
+    <!-- Header with Navbar and Search Bar -->
     <header>
         <div class="logo">
             <h1>News Analytics And Social Media Assistant</h1>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search news...">
+            <button onclick="searchNews()">🔍</button>
         </div>
         <div class="hamburger" onclick="openSidebar()">☰</div>
     </header>
@@ -158,7 +179,6 @@
 
         async function fetchNews(page, topic = '') {
             try {
-                // Set the section title dynamically
                 const sectionTitle = topic === '' ? 'Trending News' : topic;
                 document.getElementById('section-title').textContent = sectionTitle;
 
@@ -185,8 +205,6 @@
                 });
 
                 loadMoreButton.style.display = newsData.length > 0 ? 'block' : 'none';
-
-                // Close the sidebar when a topic is selected
                 closeSidebar();
 
             } catch (error) {
@@ -194,10 +212,39 @@
             }
         }
 
-        document.getElementById('load-more-btn').addEventListener('click', () => {
-            currentPage += 1;
-            fetchNews(currentPage);
-        });
+        async function searchNews() {
+            const query = document.getElementById('search-input').value.trim();
+            if (query === '') return;
+
+            try {
+                const response = await fetch(`/search-news/?q=${query}`);
+                const newsData = await response.json();
+                const newsContainer = document.getElementById('news-container');
+
+                newsContainer.innerHTML = '';  // Clear previous results
+
+                if (newsData.length === 0) {
+                    newsContainer.innerHTML = `<p>No results found for "<strong>${query}</strong>"</p>`;
+                    return;
+                }
+
+                newsData.forEach(news => {
+                    const newsItem = document.createElement('div');
+                    newsItem.className = 'news-item';
+                    newsItem.innerHTML = `
+                        <div class="news-block" onclick="window.location.href='/news/${news._id}/'">
+                            <h3>${news.headline}</h3>
+                            <p>${news.summary}</p>
+                            <p><strong>Source:</strong> ${news.source}</p>
+                        </div>
+                    `;
+                    newsContainer.appendChild(newsItem);
+                });
+
+            } catch (error) {
+                console.error('Error searching news:', error);
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => fetchNews(currentPage));
     </script>
