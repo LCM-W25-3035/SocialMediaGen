@@ -91,11 +91,12 @@ def generate_llm_output(request):
             # Default prompt for LLM
             default_prompt = """
             Create a social media post about this news. Make it engaging with:
-            - Perform sentiment analysis and tailor the post accordingly.
+            - Perform sentiment analysis and tailor the post accordingly and give me one post only.
             - A catchy opening
             - Key points from the summary
             - 1-2 relevant emojis
             - 2-3 hashtags
+            - if user passes a prompt, update post accordingly
             """
 
             # Prepare input for LLM (excluding full news details)
@@ -144,3 +145,28 @@ def generate_llm_output(request):
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=400)
+
+from bson import ObjectId
+
+def search_news(request):
+    query = request.GET.get('q', '').strip()
+
+    if not query:
+        return JsonResponse([], safe=False)
+
+    try:
+        # Perform the MongoDB query using a case-insensitive search for headline and summary
+        news_results = collection.find({
+            "$or": [
+                {"headline": {"$regex": query, "$options": "i"}},
+                {"summary": {"$regex": query, "$options": "i"}}
+            ]
+        })
+
+        # Convert MongoDB cursor to list of dictionaries
+        news_list = [{"_id": str(news["_id"]), "headline": news["headline"], "summary": news["summary"], "source": news["source"]} for news in news_results]
+
+        return JsonResponse(news_list, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
