@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 # --- MongoDB Connection Settings ---
 mongo_uri = "mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
 mongo_db_name = "news_database"            # Replace with your actual database name
-mongo_collection_name = "master_news"      # Replace with your collection name
+mongo_collection_name = "master_news_cleaned"      # Replace with your collection name
 
 def get_mongo_collection(uri, db_name, coll_name):
     try:
