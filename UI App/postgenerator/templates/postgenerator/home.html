@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>News Analytics and Social Media Assistant</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body */
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: #333;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo h1 {
+            font-size: 24px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 5px;
+            padding: 5px;
+        }
+
+        .search-container input {
+            border: none;
+            padding: 8px;
+            width: 250px;
+            outline: none;
+        }
+
+        .search-container button {
+            background: #ff6f61;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .search-container button:hover {
+            background: #e85c50;
+        }
+
+        /* Sidebar Menu */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #333;
+            color: #fff;
+            transition: 0.3s;
+            padding-top: 60px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar ul li {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+        }
+
+        .sidebar ul li a:hover {
+            color: #ff6f61;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        main {
+            padding: 40px;
+        }
+
+        /* Section Styles */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        h2, h3, h4 {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Navbar and Search Bar -->
+    <header>
+        <div class="logo">
+            <h1>News Analytics And Social Media Assistant</h1>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search news...">
+            <button onclick="searchNews()">🔍</button>
+        </div>
+        <div class="hamburger" onclick="openSidebar()">☰</div>
+    </header>
+
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="sidebar">
+        <div class="close-btn" onclick="closeSidebar()">×</div>
+        <ul>
+            <li><a href="#" onclick="fetchNews(1, '')">All Topics</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Education')">Education</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Entertainment')">Entertainment</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Environment')">Environment</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Finance')">Finance</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Food')">Food</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Health')">Health</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Politics')">Politics</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Sports')">Sports</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Technology')">Technology</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Travel')">Travel</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Trending News Section -->
+        <section id="trending" class="section">
+            <h2 id="section-title">Trending News</h2>
+            <div class="news-container" id="news-container"></div>
+            <button id="load-more-btn" style="display: none;">Load More</button>
+        </section>
+    </main>
+
+    <script>
+        let currentPage = 1;
+
+        function openSidebar() {
+            document.getElementById("sidebar").style.left = "0";
+        }
+
+        function closeSidebar() {
+            document.getElementById("sidebar").style.left = "-250px";
+        }
+
+        async function fetchNews(page, topic = '') {
+            try {
+                const sectionTitle = topic === '' ? 'Trending News' : topic;
+                document.getElementById('section-title').textContent = sectionTitle;
+
+                const response = await fetch(`/fetch-news/?page=${page}&topic=${topic}`);
+                const newsData = await response.json();
+                const newsContainer = document.getElementById('news-container');
+                const loadMoreButton = document.getElementById('load-more-btn');
+
+                if (page === 1) {
+                    newsContainer.innerHTML = '';
+                }
+
+                newsData.forEach(news => {
+                    const newsItem = document.createElement('div');
+                    newsItem.className = 'news-item';
+                    newsItem.innerHTML = `
+                        <div class="news-block" onclick="window.location.href='/news/${news._id}/'">
+                            <h3>${news.headline}</h3>
+                            <p>${news.summary}</p>
+                            <p><strong>Source:</strong> ${news.source}</p>
+                        </div>
+                    `;
+                    newsContainer.appendChild(newsItem);
+                });
+
+                loadMoreButton.style.display = newsData.length > 0 ? 'block' : 'none';
+                closeSidebar();
+
+            } catch (error) {
+                console.error('Error fetching news:', error);
+            }
+        }
+
+        async function searchNews() {
+            const query = document.getElementById('search-input').value.trim();
+            if (query === '') return;
+
+            try {
+                const response = await fetch(`/search-news/?q=${query}`);
+                const newsData = await response.json();
+                const newsContainer = document.getElementById('news-container');
+
+                newsContainer.innerHTML = '';  // Clear previous results
+
+                if (newsData.length === 0) {
+                    newsContainer.innerHTML = `<p>No results found for "<strong>${query}</strong>"</p>`;
+                    return;
+                }
+
+                newsData.forEach(news => {
+                    const newsItem = document.createElement('div');
+                    newsItem.className = 'news-item';
+                    newsItem.innerHTML = `
+                        <div class="news-block" onclick="window.location.href='/news/${news._id}/'">
+                            <h3>${news.headline}</h3>
+                            <p>${news.summary}</p>
+                            <p><strong>Source:</strong> ${news.source}</p>
+                        </div>
+                    `;
+                    newsContainer.appendChild(newsItem);
+                });
+
+            } catch (error) {
+                console.error('Error searching news:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => fetchNews(currentPage));
+    </script>
+</body>
+
+</html>

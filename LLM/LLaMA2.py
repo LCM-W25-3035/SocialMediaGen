@@ -1,28 +1,20 @@
-"""
- Prompt:
- 
- Write a Streamlit app that generates social media posts from MongoDB articles using the DeepSeek framework and the DeepThink R1 model. The app should:
- 
- - Load the model efficiently to improve performance.
- - Display articles from MongoDB in a dropdown menu.
- - Add Sentiment Analysis to analyze the sentiment of generated posts
- - Allow users to select a platform (Twitter, LinkedIn, Instagram, Facebook) and a tone (Professional, Casual, Funny, Inspirational).
- - Use a well-structured prompt template that ensures generated posts:
- - Start with a strong hook.
- - Use clear and engaging language.
- - Include relevant hashtags.
- - Add appropriate emojis.
- - End with a strong call to action.
- 
- Ensure efficient caching for both model loading and MongoDB queries to enhance performance."""
- 
+""" I provided ChatGPT with my previous LLM app code and asked improvements to enhance my prompt engineering for generating better and more creative social media posts.
+ Specifically, I asked for:
+
+--> Improved Prompt Engineering: The new prompt should generate posts with appropriate hashtags and emojis that align with the article's content, rather than relying 
+on predefined options.
+
+--> Enhanced Sentiment Analysis: The sentiment analysis should more accurately reflect the emotional tone of the generated posts based on the article's context."""
+
+
 
 import streamlit as st
 from langchain.prompts import PromptTemplate
-from ctransformers import AutoModelForCausalLM
 from pymongo import MongoClient
 import pandas as pd
-from textblob import TextBlob  # For Sentiment Analysis
+from nltk.sentiment import SentimentIntensityAnalyzer  # Improved Sentiment Analysis
+import requests  # For Hugging Face API
+import re  # For extracting hashtags
 
 # Set Streamlit Page Configuration
 st.set_page_config(page_title="Generate Social Media Posts", page_icon='📱')
@@ -38,23 +30,15 @@ def fetch_articles():
     articles = collection.find({}, {"headline": 1, "summary": 1}).limit(20)
     return list(articles)
 
-# Load the model once during app startup
-@st.cache_resource
-def load_model():
-    return AutoModelForCausalLM.from_pretrained(
-        "E:/Sem-3/Capstone Project/llama-2-7b-chat.ggmlv3.q8_0.bin",
-        model_type='llama',
-        max_new_tokens=100,
-        temperature=0.09,
-        top_p=0.95,  # 🔥 Higher value for diverse yet focused text
-        top_k=50     # 🔥 Limits vocabulary to improve coherence
-    )
+# Function to extract hashtags from text
+def extract_hashtags(text, limit=5): # Limit to 5 hashtags by default
+    words = re.findall(r'\b\w{4,}\b', text.lower())
+    common_hashtags = [f"#{word}" for word in words if len(word) > 3][:limit]
+    return ' '.join(common_hashtags) if common_hashtags else "#News #Update #Breaking"
 
-# Initialize model at startup
-llm = load_model()
-
-# Function to get response from LLaMA 2 model
+# Function to get response from Hugging Face API
 def getLLamaresponse(input_text, platform, tone):
+    # Improved prompt template
     template = """
        🎯 *Attention-grabbing post for {platform} with a {tone} tone:*
 
@@ -62,29 +46,66 @@ def getLLamaresponse(input_text, platform, tone):
        {input_text}
 
        📢 **Post Structure:** 
-       1️⃣ Start with an intriguing hook (e.g., "Did you know...?")  
-       2️⃣ Follow with a concise yet impactful message  
-       3️⃣ Include relevant hashtags (#News, #Trending, #MustRead)  
-       4️⃣ Add an emoji or two if appropriate  
-       5️⃣ End with a strong call to action (e.g., "Share your thoughts!")  
+       1️⃣ Start with a creative hook (e.g., "Did you know...?", "Breaking news!", "Here's something you can't miss!")  
+       2️⃣ Follow with a concise yet impactful message that highlights the key points of the article.  
+       3️⃣ Include relevant hashtags: {hashtags}  
+       4️⃣ Add appropriate emojis: {emojis}  
+       5️⃣ End with a strong call to action (e.g., "What are your thoughts?", "Tag someone who needs to see this!", "Let's discuss below!")  
 
        🚀 **Generated Post:** 
      """
-    
+
     prompt = PromptTemplate(
-        input_variables=["platform", "tone", "input_text"],
+        input_variables=["platform", "tone", "input_text", "hashtags", "emojis"],
         template=template
     )
-    
-    response = llm(prompt.format(platform=platform, tone=tone, input_text=input_text))
-    return response
 
-# Function to analyze sentiment
+    # Generate dynamic hashtags and emojis based on content
+    hashtags = extract_hashtags(input_text)
+    emojis = "🔥📢🚨" if "breaking" in input_text.lower() else "📰📣📌"
+
+    # Format the prompt
+    formatted_prompt = prompt.format(
+        platform=platform,
+        tone=tone,
+        input_text=input_text,
+        hashtags=hashtags,
+        emojis=emojis
+    )
+
+    # Hugging Face API endpoint and headers
+    API_URL = "https://api-inference.huggingface.co/models/meta-llama/Llama-2-7b-chat-hf"
+    headers = {
+        "Authorization": f"Bearer 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",
+        "Content-Type": "application/json"
+    }
+
+    # Payload for the API request
+    payload = {
+        "inputs": formatted_prompt,
+        "parameters": {
+            "max_new_tokens": 150,  # Increased token limit for detailed posts
+            "temperature": 0.7, # Lower temperature for more controlled output
+            "top_p": 0.95, # Higher nucleus sampling probability
+            "top_k": 50     # Higher top-k value for diverse output
+        }
+    }
+
+    # Send request to Hugging Face API
+    response = requests.post(API_URL, headers=headers, json=payload)
+
+    if response.status_code == 200:
+        return response.json()[0]['generated_text']
+    else:
+        return f"Error: {response.status_code}, {response.text}"
+
+# Improved Sentiment Analysis with VADER
 def analyze_sentiment(text):
-    analysis = TextBlob(text)
-    if analysis.sentiment.polarity > 0:
+    sia = SentimentIntensityAnalyzer()
+    sentiment_score = sia.polarity_scores(text)['compound']
+    if sentiment_score > 0.2:
         return "Positive 😊"
-    elif analysis.sentiment.polarity < 0:
+    elif sentiment_score < -0.2:
         return "Negative 😞"
     else:
         return "Neutral 😐"
@@ -122,10 +143,10 @@ if submit:
         st.warning("Please select an article to generate a post.")
     else:
         with st.spinner("Generating post..."):
-            # Generate post using LLaMA 2 model
+            # Generate post using Hugging Face API
             post = getLLamaresponse(selected_article_text, platform, tone)
             st.write(post)  # Display the generated post
 
             # Analyze sentiment of the generated post
             sentiment = analyze_sentiment(post)
-            st.success(f"Sentiment: {sentiment}")  # 🔥 Display Sentiment
+            st.success(f"Sentiment: {sentiment}") # Display the sentiment

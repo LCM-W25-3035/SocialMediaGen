@@ -7,7 +7,7 @@ from pymongo import MongoClient
 from pymongo.server_api import ServerApi
 
 # MongoDB Connection
-MONGO_URI = "mongodb+srv://Govind:Qwerty1234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
+MONGO_URI = "mongodb+srv://Govind:*******@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
 DB_NAME = "news_database"
 COLLECTION_NAME = "ctv_news"
 

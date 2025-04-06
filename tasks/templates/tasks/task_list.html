@@ -1,0 +1,14 @@
+<<h1>Task List</h1>
+<a href="{% url 'task_create' %}">Create New Task</a>
+<ul>
+    {% for task in tasks %}
+        <li>
+            {{ task.title }} - {{ task.description }}
+            <a href="{% url 'task_update' task.pk %}">Edit</a>
+            <form action="{% url 'task_delete' task.pk %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Delete</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
