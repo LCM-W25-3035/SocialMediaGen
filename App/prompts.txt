@@ -1,0 +1,26 @@
+**first prompt**:
+def search_news(request):
+    query = request.GET.get('q', '').strip()
+    if not query:
+        return JsonResponse([], safe=False)
+
+    try:
+        news_results = collection.find({
+            "$or": [
+                {"headline": {"$regex": query, "$options": "i"}},
+                {"summary": {"$regex": query, "$options": "i"}}
+            ]
+        })
+
+        news_list = [{"_id": str(news["_id"]), "headline": news["headline"], "summary": news["summary"], "source": news["source"]} for news in news_results]
+        return JsonResponse(news_list, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+this is my function to search for all news articles from database, i want to see how much time it takes to fetch the data
+
+
+**last prompt**:
+getting below error:
+Internal Server Error: /generate-llm-output/
+[06/Apr/2025 01:50:38] "POST /generate-llm-output/ HTTP/1.1" 500 116
