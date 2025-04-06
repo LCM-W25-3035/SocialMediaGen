@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>News Detail - News Analytics</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: #333;
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        main {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #news-block h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+
+        #news-block p {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        #notepad textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+
+        #generateBtn {
+            padding: 12px 25px;
+            background-color: #ff6f61;
+            border: none;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        #generateBtn:hover {
+            background-color: #e55b4b;
+        }
+
+        #generateBtn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #loading {
+            display: none;
+            font-size: 16px;
+            color: #007bff;
+            margin-top: 15px;
+        }
+
+        #error-message {
+            display: none;
+            color: #d9534f;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8d7da;
+            border-radius: 4px;
+        }
+
+        #output {
+            white-space: pre-line;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border: 1px solid #eee;
+            min-height: 100px;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <h1>News Analytics</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="news-block" class="section">
+            <h2>{{ news_item.headline }}</h2>
+            <p>{{ news_item.summary }}</p>
+            <p><strong>Source:</strong> {{ news_item.source }}</p>
+        </section>
+
+        <section id="notepad" class="section">
+            <h2>Your Input</h2>
+            <textarea id="userInput" placeholder="Add any specific instructions for the post generation (optional)..."></textarea>
+            <button id="generateBtn">Generate Social Media Post</button>
+            <p id="loading">Generating post... Please wait.</p>
+            <p id="error-message"></p>
+        </section>
+
+        <section id="llm-output" class="section">
+            <h2>Generated Post</h2>
+            <div id="output">Your generated social media post will appear here.</div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 News Analytics. All rights reserved.</p>
+    </footer>
+
+    <!-- CSRF Token for AJAX requests -->
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get elements
+            const generateBtn = document.getElementById('generateBtn');
+            const userInput = document.getElementById('userInput');
+            const loading = document.getElementById('loading');
+            const outputDiv = document.getElementById('output');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Function to get CSRF token
+            function getCSRFToken() {
+                const csrfTokenElement = document.querySelector('[name=csrfmiddlewaretoken]');
+                return csrfTokenElement ? csrfTokenElement.value : null;
+            }
+
+            // Event listener for generate button
+            generateBtn.addEventListener('click', async () => {
+                const inputText = userInput.value.trim();
+                
+                // Prepare for request
+                loading.style.display = 'block';
+                errorMessage.style.display = 'none';
+                outputDiv.textContent = 'Generating...';
+                generateBtn.disabled = true;
+
+                try {
+                    // Prepare request data
+                    const payload = {
+                        input: inputText,
+                        headline: "{{ news_item.headline|escapejs }}",
+                        summary: "{{ news_item.summary|escapejs }}"
+                    };
+
+                    // Make API request
+                    const response = await fetch('/generate-llm-output/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCSRFToken(),
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Server responded with status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.social_post) {
+                        outputDiv.innerHTML = data.social_post.replace(/\n/g, '<br>');
+                    } else {
+                        throw new Error(data.error || 'No output generated');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                    outputDiv.textContent = 'Error generating post. Please try again.';
+                } finally {
+                    loading.style.display = 'none';
+                    generateBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
