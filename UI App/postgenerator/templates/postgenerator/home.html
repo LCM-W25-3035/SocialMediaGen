@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -142,7 +141,7 @@
     <div id="sidebar" class="sidebar">
         <div class="close-btn" onclick="closeSidebar()">×</div>
         <ul>
-            <li><a href="#" onclick="fetchNews(1, '')">All Topics</a></li>
+            <li><a href="#" onclick="fetchNews(1, 'Trending')">Trending</a></li>
             <li><a href="#" onclick="fetchNews(1, 'Education')">Education</a></li>
             <li><a href="#" onclick="fetchNews(1, 'Entertainment')">Entertainment</a></li>
             <li><a href="#" onclick="fetchNews(1, 'Environment')">Environment</a></li>
@@ -168,66 +167,106 @@
 
     <script>
         let currentPage = 1;
-
+    
         function openSidebar() {
             document.getElementById("sidebar").style.left = "0";
         }
-
+    
         function closeSidebar() {
             document.getElementById("sidebar").style.left = "-250px";
         }
-
+    
         async function fetchNews(page, topic = '') {
             try {
+                let apiUrl = '';
                 const sectionTitle = topic === '' ? 'Trending News' : topic;
+    
+                // Set the correct API URL based on the topic
+                if (topic === 'Trending' || topic === '') {
+                    apiUrl = `/fetch-trending-news/?page=${page}`;
+                } else {
+                    apiUrl = `/fetch-news/?page=${page}&topic=${topic}`;
+                }
+    
+                // Update section title
                 document.getElementById('section-title').textContent = sectionTitle;
-
-                const response = await fetch(`/fetch-news/?page=${page}&topic=${topic}`);
-                const newsData = await response.json();
+    
+                // Fetch news data
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+    
+                console.log('Fetched News Data:', data); // Debugging
+    
                 const newsContainer = document.getElementById('news-container');
                 const loadMoreButton = document.getElementById('load-more-btn');
-
+    
+                // Clear the news container if this is the first page
                 if (page === 1) {
                     newsContainer.innerHTML = '';
                 }
-
-                newsData.forEach(news => {
-                    const newsItem = document.createElement('div');
-                    newsItem.className = 'news-item';
-                    newsItem.innerHTML = `
-                        <div class="news-block" onclick="window.location.href='/news/${news._id}/'">
-                            <h3>${news.headline}</h3>
-                            <p>${news.summary}</p>
-                            <p><strong>Source:</strong> ${news.source}</p>
-                        </div>
-                    `;
-                    newsContainer.appendChild(newsItem);
-                });
-
-                loadMoreButton.style.display = newsData.length > 0 ? 'block' : 'none';
+    
+                let articles = data;
+    
+                // If trending news format includes `articles` and `keywords`
+                if (data.articles && Array.isArray(data.articles)) {
+                    articles = data.articles;
+                }
+    
+                if (articles.length > 0) {
+                    articles.forEach(news => {
+                        const newsItem = document.createElement('div');
+                        newsItem.className = 'news-item';
+                        newsItem.innerHTML = `
+                            <div class="news-block" onclick="window.location.href='/news/${news._id}/'">
+                                <h3>${news.headline}</h3>
+                                <p>${news.summary}</p>
+                                <p><strong>Source:</strong> ${news.source}</p>
+                            </div>
+                        `;
+                        newsContainer.appendChild(newsItem);
+                    });
+    
+                    // Show "Load More" button
+                    loadMoreButton.style.display = 'block';
+                    loadMoreButton.onclick = function () {
+                        currentPage += 1;
+                        fetchNews(currentPage, topic);
+                    };
+                } else {
+                    if (page === 1) {
+                        newsContainer.innerHTML = `<p>No news articles found.</p>`;
+                    }
+                    loadMoreButton.style.display = 'none';
+                }
+    
+                // Close sidebar
                 closeSidebar();
-
+    
             } catch (error) {
                 console.error('Error fetching news:', error);
+                document.getElementById('news-container').innerHTML = '<p>Error loading news. Please try again later.</p>';
             }
         }
-
+    
         async function searchNews() {
             const query = document.getElementById('search-input').value.trim();
             if (query === '') return;
-
+    
             try {
                 const response = await fetch(`/search-news/?q=${query}`);
                 const newsData = await response.json();
                 const newsContainer = document.getElementById('news-container');
-
-                newsContainer.innerHTML = '';  // Clear previous results
-
+    
+                // Clear previous results
+                newsContainer.innerHTML = '';
+    
+                // Display message if no results found
                 if (newsData.length === 0) {
                     newsContainer.innerHTML = `<p>No results found for "<strong>${query}</strong>"</p>`;
                     return;
                 }
-
+    
+                // Render search results
                 newsData.forEach(news => {
                     const newsItem = document.createElement('div');
                     newsItem.className = 'news-item';
@@ -240,14 +279,19 @@
                     `;
                     newsContainer.appendChild(newsItem);
                 });
-
+    
             } catch (error) {
                 console.error('Error searching news:', error);
+                document.getElementById('news-container').innerHTML = '<p>Error searching news.</p>';
             }
         }
-
-        document.addEventListener('DOMContentLoaded', () => fetchNews(currentPage));
+    
+        // Load trending news on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchNews(currentPage, 'Trending');
+        });
     </script>
+    
 </body>
 
 </html>
