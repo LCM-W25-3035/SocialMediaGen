@@ -7,6 +7,16 @@ from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import unquote
 import json
 import requests
+from elasticsearch import Elasticsearch
+
+# connect to elastic search
+es = Elasticsearch(
+    config("ES_URL"),
+    basic_auth=(config("ES_USER"), config("ES_PASSWORD")),
+    verify_certs=False
+)
+
+INDEX_NAME = "news_index"  # Replace with your actual index name
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://Govind:****234@projectnewsanalytics.kdevn.mongodb.net/?retryWrites=true&w=majority&appName=ProjectNewsAnalytics"
@@ -150,63 +160,37 @@ from bson import ObjectId
 
 def search_news(request):
     query = request.GET.get('q', '').strip()
-
     if not query:
         return JsonResponse([], safe=False)
 
     try:
-        # Perform the MongoDB query using a case-insensitive search for headline and summary
-        news_results = collection.find({
-            "$or": [
-                {"headline": {"$regex": query, "$options": "i"}},
-                {"summary": {"$regex": query, "$options": "i"}}
-            ]
-        })
+        es_query = {
+            "query": {
+                "multi_match": {
+                    "query": query,
+                    "fields": ["headline", "summary"],
+                    "fuzziness": "auto"
+                }
+            }
+        }
 
-        # Convert MongoDB cursor to list of dictionaries
-        news_list = [{"_id": str(news["_id"]), "headline": news["headline"], "summary": news["summary"], "source": news["source"]} for news in news_results]
+        print("Running Elasticsearch Query:", es_query)
+
+        es_response = es.search(index=INDEX_NAME, body=es_query)
+        print("Elasticsearch response:", es_response)
+
+        hits = es_response.get('hits', {}).get('hits', [])
+
+        news_list = [{
+            "_id": hit["_id"],
+            "headline": hit["_source"].get("headline"),
+            "summary": hit["_source"].get("summary"),
+            "source": hit["_source"].get("source")
+        } for hit in hits]
 
         return JsonResponse(news_list, safe=False)
 
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
-    def fetch_trending_news(request):
-    try:
-        # Step 1: Retrieve the latest 100 news articles from the MongoDB collection
-        # Only fetch '_id', 'headline', 'summary', and 'source' fields for each document
-        recent_news = list(
-            collection.find({}, {'_id': 1, 'headline': 1, 'summary': 1, 'source': 1})
-            .sort([('_id', -1)])  # Sort by '_id' in descending order (most recent first)
-            .limit(100)  # Limit the result to 100 items
-        )
-
-        # Step 2: Initialize a counter to store keyword frequencies
-        keyword_counter = Counter()
-
-        # Step 3: Iterate through each news item to extract keywords
-        for news in recent_news:
-            # Combine headline and summary text, convert to lowercase
-            text = f"{news['headline']} {news.get('summary', '')}".lower()
-            # Extract words with 4 or more characters using regex
-            words = re.findall(r'\b\w{4,}\b', text)
-            # Update the keyword counter with these words
-            keyword_counter.update(words)
-
-        # Step 4: Select the top 5 most common keywords
-        top_keywords = [kw for kw, _ in keyword_counter.most_common(5)]
-
-        # Step 5: Filter news articles that contain at least one of the top keywords
-        trending_news = []
-        for news in recent_news:
-            text = f"{news['headline']} {news.get('summary', '')}".lower()
-            # Check if any of the top keywords are present in the text
-            if any(kw in text for kw in top_keywords):
-                news['_id'] = str(news['_id'])  # Convert ObjectId to string for JSON serialization
-                trending_news.append(news)
-
-        # Step 6: Return the top keywords and the list of trending news articles
-        return JsonResponse({'keywords': top_keywords, 'articles': trending_news}, safe=False)
-
-    except Exception as e:
-        # In case of any error, return a JSON response with the error message and status 500
+        import traceback
+        traceback.print_exc()
         return JsonResponse({'error': str(e)}, status=500)
