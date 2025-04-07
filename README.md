@@ -8,10 +8,9 @@ A smart, AI-driven platform that collects trending news, classifies it in real t
 ## 🔗 Project Links
 
 - **Project Board**: [GitHub Project Board](https://github.com/users/Akash1820/projects/3)
-- **Topic Research**: [Google Doc](https://docs.google.com/document/d/1D-LyJlgpkWVJfpK2zqVApjrac3kLk9V9ZJU0Oea3AWQ/edit?usp=sharing)
-- **Documentation**: [Architecture & Components](https://docs.google.com/document/d/1GJD3quzE5uT2W5Tc6nIscqC0jW9xEHw037UtIlK0W24/edit?usp=sharing)
-- **Weekly Check-ins**: [Progress Tracker](https://docs.google.com/document/d/1h99VUvIlSyL6-47WVe66zkC2z7ib8frbYlsOBPSmdSc/edit?usp=sharing)
-- **Final Technical Report**: [SocialMediaGen Report](https://docs.google.com/document/d/1myer_vojVGAglHs21oU6DKHmsSWygdL8US48OoY1ICw/edit?usp=sharing)
+- **Topic Research**: [Google Doc](https://docs.google.com/document/d/1D-LyJIgpkWVJfpK2zqVApjrac3kLK9V9ZtJ0Oea3AWQ/edit?tab=t.0)
+- **Documentation**: [Architecture & Components](https://docs.google.com/document/d/1GJD3quzE5uT2W5Tc6nIscqCOjW9xEHw037UtIlK0W24/edit?tab=t.0)
+- **Weekly Check-ins**: [Progress Tracker](https://docs.google.com/document/d/1h99VUvllSyL6-47WVe66zkC2z7ib8frbYIsOBPSmdSc/edit?tab=t.0)
 
 ---
 
